@@ -6,7 +6,7 @@ import './SolutionCard.css';
  * after the citizen has verified the interpretation.
  */
 
-export default function SolutionCard({ solution, sessionStatus }) {
+export default function SolutionCard({ solution, sessionStatus, onSend }) {
   if (!solution || sessionStatus !== 'verified') return null;
 
   return (
@@ -23,10 +23,13 @@ export default function SolutionCard({ solution, sessionStatus }) {
           <p className="solution-text">{solution}</p>
         </div>
         <div className="solution-footer">
-          <button className="btn btn-primary btn-sm" onClick={() => alert('Solution sent to citizen!')}>
+          <button className="btn btn-primary btn-sm" onClick={() => onSend?.(solution)}>
             📤 Send to Citizen
           </button>
-          <button className="btn btn-ghost btn-sm" onClick={() => alert('Solution copied to clipboard!')}>
+          <button className="btn btn-ghost btn-sm" onClick={() => {
+            navigator.clipboard.writeText(solution);
+            alert('Solution copied to clipboard!');
+          }}>
             📋 Copy
           </button>
         </div>

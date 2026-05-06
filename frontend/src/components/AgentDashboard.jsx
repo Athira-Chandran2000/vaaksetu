@@ -212,6 +212,20 @@ export default function AgentDashboard() {
     }
   }, [pipelineResult]);
 
+  // ─── Send to Citizen ──────────────────────────────────────────────
+
+  const handleSendToCitizen = useCallback((solutionText) => {
+    setTranscriptHistory(prev => [...prev, {
+      text: solutionText,
+      language: pipelineResult?.language || 'kannada',
+      timestamp: new Date().toISOString(),
+      source: 'agent'
+    }]);
+    
+    // In a real app, this would also emit a WebSocket event or call an API
+    console.log('Solution sent to citizen:', solutionText);
+  }, [pipelineResult]);
+
   // ─── CRM Trends ───────────────────────────────────────────────────
 
   const fetchCRMTrends = async () => {
@@ -286,8 +300,10 @@ export default function AgentDashboard() {
               <h4 className="transcript-title">📜 Transcript History</h4>
               <div className="transcript-list">
                 {transcriptHistory.map((entry, i) => (
-                  <div key={i} className="transcript-entry animate-fade-in">
-                    <span className="transcript-lang badge badge-accent">{entry.language}</span>
+                  <div key={i} className={`transcript-entry animate-fade-in ${entry.source === 'agent' ? 'agent-message' : ''}`}>
+                    <span className={`transcript-lang badge ${entry.source === 'agent' ? 'badge-success' : 'badge-accent'}`}>
+                      {entry.source === 'agent' ? 'AGENT' : entry.language}
+                    </span>
                     <p className="transcript-text">{entry.text}</p>
                     <span className="transcript-time">
                       {new Date(entry.timestamp).toLocaleTimeString()}
@@ -319,6 +335,7 @@ export default function AgentDashboard() {
               <SolutionCard 
                 solution={pipelineResult.interpretation?.suggested_solution}
                 sessionStatus={pipelineResult.status}
+                onSend={handleSendToCitizen}
               />
 
               {/* Agent Correction */}
