@@ -17,7 +17,7 @@ const SAMPLE_QUERIES = [
   { label: "Seva Sindhu Status", text: "Naan income certificate ge Seva Sindhu nalli apply maadidde, ondu tingalu aaytu, application status check maadoke gottilla", language: "kannada" },
 ];
 
-export default function CallInterface({ onSubmitText, onSubmitAudio, isProcessing }) {
+export default function CallInterface({ onSubmitText, onSubmitAudio, isProcessing, transcriptHistory = [] }) {
   const [text, setText] = useState('');
   const [language, setLanguage] = useState('kannada');
   const [dialect, setDialect] = useState('standard');
@@ -26,10 +26,17 @@ export default function CallInterface({ onSubmitText, onSubmitAudio, isProcessin
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
   const timerRef = useRef(null);
+  const chatEndRef = useRef(null);
+
+  // Auto-scroll to bottom of chat
+  React.useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [transcriptHistory]);
 
   const handleSubmitText = () => {
     if (!text.trim() || isProcessing) return;
     onSubmitText?.(text.trim(), language, dialect);
+    setText(''); // Clear input after sending
   };
 
   const handleSampleQuery = (sample) => {
@@ -76,112 +83,103 @@ export default function CallInterface({ onSubmitText, onSubmitAudio, isProcessin
   };
 
   return (
-    <div className="call-interface glass-card">
+    <div className="call-interface glass-card chat-mode">
       <div className="ci-header">
-        <h3 className="ci-title">📞 Citizen Call Simulator</h3>
+        <h3 className="ci-title">🤖 VaakSetu Chatbot</h3>
         <div className="ci-status">
           <span className={`status-dot ${isProcessing ? 'warning' : 'active'}`} />
-          <span>{isProcessing ? 'Processing...' : 'Ready'}</span>
+          <span>{isProcessing ? 'Thinking...' : 'Online'}</span>
         </div>
       </div>
 
-      {/* Language & Dialect Selection */}
-      <div className="ci-controls">
-        <div className="ci-control-group">
-          <label className="ci-label">Language</label>
-          <select
-            className="select"
+      {/* Chat Window */}
+      <div className="chat-window">
+        {transcriptHistory.length === 0 ? (
+          <div className="chat-empty">
+            <div className="chat-empty-icon">👋</div>
+            <p>How can I help you today?</p>
+            <span>Ask about Ration cards, Water supply, or Government services in Kannada, Hindi, or English.</span>
+          </div>
+        ) : (
+          <div className="chat-messages">
+            {transcriptHistory.map((entry, i) => (
+              <div key={i} className={`transcript-entry animate-fade-in ${entry.source === 'agent' ? 'agent-message' : ''}`}>
+                <div className="transcript-meta">
+                  <span className={`badge ${entry.source === 'agent' ? 'badge-success' : 'badge-accent'}`}>
+                    {entry.source === 'agent' ? 'AGENT' : entry.language}
+                  </span>
+                  <span className="transcript-time">
+                    {new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {entry.source === 'audio' && ' 🎙️'}
+                  </span>
+                </div>
+                <p className="transcript-text">{entry.text}</p>
+              </div>
+            ))}
+            <div ref={chatEndRef} />
+          </div>
+        )}
+      </div>
+
+      {/* Input Area */}
+      <div className="chat-input-container">
+        <div className="chat-controls-mini">
+           <select
+            className="select-mini"
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            id="language-select"
           >
             <option value="kannada">Kannada</option>
             <option value="hindi">Hindi</option>
             <option value="english">English</option>
-            <option value="kannada-hindi">Kannada-Hindi Mix</option>
-            <option value="kannada-english">Kannada-English Mix</option>
           </select>
         </div>
-        <div className="ci-control-group">
-          <label className="ci-label">Dialect</label>
-          <select
-            className="select"
-            value={dialect}
-            onChange={(e) => setDialect(e.target.value)}
-            id="dialect-select"
-          >
-            <option value="standard">Standard Kannada</option>
-            <option value="dharwad">Dharwad Kannada</option>
-            <option value="mysuru">Mysuru Kannada</option>
-            <option value="mangaluru">Mangaluru Kannada</option>
-            <option value="havyaka">Havyaka</option>
-            <option value="north-karnataka">North Karnataka</option>
-          </select>
-        </div>
-      </div>
 
-      {/* Text Input */}
-      <div className="ci-text-input">
-        <textarea
-          className="textarea"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Type what the citizen says... (Kannada transliterated, Hindi, or English)"
-          rows={3}
-          id="citizen-text-input"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              handleSubmitText();
-            }
-          }}
-        />
-        <div className="ci-text-actions">
-          <button
-            className="btn btn-primary"
-            onClick={handleSubmitText}
-            disabled={!text.trim() || isProcessing}
-            id="submit-text-btn"
-          >
-            {isProcessing ? (
-              <>
-                <span className="animate-spin">⏳</span>
-                Processing...
-              </>
+        <div className="ci-text-input chat-style">
+          <textarea
+            className="textarea chat-textarea"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Type your message..."
+            rows={1}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmitText();
+              }
+            }}
+          />
+          
+          <div className="chat-actions">
+            {!isRecording ? (
+              <button className="btn-circle" onClick={startRecording} title="Record Audio">
+                🎙️
+              </button>
             ) : (
-              <>🧠 Process with AI</>
+              <button className="btn-circle btn-danger recording-pulse" onClick={stopRecording}>
+                ⏹️
+              </button>
             )}
-          </button>
+            
+            <button
+              className="btn-circle btn-primary"
+              onClick={handleSubmitText}
+              disabled={!text.trim() || isProcessing}
+            >
+              {isProcessing ? '⏳' : '🚀'}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Audio Recording */}
-      <div className="ci-audio">
-        <div className="ci-audio-controls">
-          {!isRecording ? (
-            <button className="btn btn-ghost btn-lg record-btn" onClick={startRecording} id="record-btn">
-              <span className="record-icon">🎙️</span>
-              Record Audio
-            </button>
-          ) : (
-            <button className="btn btn-danger btn-lg record-btn recording" onClick={stopRecording} id="stop-record-btn">
-              <span className="recording-pulse" />
-              Stop Recording ({recordingDuration}s)
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Sample Queries */}
-      <div className="ci-samples">
-        <h4 className="ci-samples-title">Quick Test Scenarios</h4>
-        <div className="sample-grid">
+      {/* Quick Suggestions */}
+      <div className="ci-samples mini">
+        <div className="sample-grid scroll-x">
           {SAMPLE_QUERIES.map((sample, i) => (
             <button
               key={i}
-              className="btn btn-ghost btn-sm sample-btn"
+              className="btn btn-ghost btn-xs sample-btn-pill"
               onClick={() => handleSampleQuery(sample)}
-              title={sample.text}
             >
               {sample.label}
             </button>

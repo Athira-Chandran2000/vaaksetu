@@ -292,30 +292,9 @@ export default function AgentDashboard() {
             onSubmitText={handleSubmitText}
             onSubmitAudio={handleSubmitAudio}
             isProcessing={isProcessing}
+            transcriptHistory={transcriptHistory}
           />
 
-          {/* Transcript History */}
-          {transcriptHistory.length > 0 && (
-            <div className="transcript-history glass-card">
-              <h4 className="transcript-title">📜 Live Transcript</h4>
-              <div className="transcript-list">
-                {transcriptHistory.map((entry, i) => (
-                  <div key={i} className={`transcript-entry animate-fade-in ${entry.source === 'agent' ? 'agent-message' : ''}`}>
-                    <div className="transcript-meta">
-                      <span className={`badge ${entry.source === 'agent' ? 'badge-success' : 'badge-accent'}`}>
-                        {entry.source === 'agent' ? 'AGENT' : entry.language}
-                      </span>
-                      <span className="transcript-time">
-                        {new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        {entry.source === 'audio' && ' 🎙️'}
-                      </span>
-                    </div>
-                    <p className="transcript-text">{entry.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Center Column: Pipeline Results */}
