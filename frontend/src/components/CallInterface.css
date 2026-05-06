@@ -1,0 +1,131 @@
+.call-interface {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.ci-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ci-title {
+  font-family: var(--font-display);
+  font-size: var(--font-lg);
+  font-weight: 700;
+}
+
+.ci-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+/* Controls */
+.ci-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.ci-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.ci-label {
+  font-size: var(--font-xs);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Text Input */
+.ci-text-input {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ci-text-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Audio */
+.ci-audio {
+  display: flex;
+  justify-content: center;
+}
+
+.ci-audio-controls {
+  width: 100%;
+}
+
+.record-btn {
+  width: 100%;
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--font-md);
+  gap: var(--space-3);
+}
+
+.record-icon {
+  font-size: 1.5rem;
+}
+
+.record-btn.recording {
+  animation: breathe 1.5s infinite;
+}
+
+.recording-pulse {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  animation: pulse 1s infinite;
+}
+
+/* Sample Queries */
+.ci-samples {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.ci-samples-title {
+  font-size: var(--font-xs);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sample-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.sample-btn {
+  font-size: var(--font-xs) !important;
+  padding: var(--space-1) var(--space-3) !important;
+}
+
+.sample-btn:hover {
+  border-color: var(--accent-primary) !important;
+  color: var(--accent-primary-light) !important;
+}
+
+@media (max-width: 768px) {
+  .ci-controls {
+    grid-template-columns: 1fr;
+  }
+}
