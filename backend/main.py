@@ -79,16 +79,7 @@ app.add_middleware(
 
 # ─── REST Endpoints ─────────────────────────────────────────────────────────
 
-@app.get("/")
-async def root():
-    return {
-        "service": "VaakSetu",
-        "version": "2.0.0",
-        "description": "AI-Assisted Voice Understanding for the 1092 Helpline (Powered by Groq + Sarvam AI)",
-        "status": "running",
-        "groq_configured": bool(os.getenv("GROQ_API_KEY")),
-        "sarvam_asr_configured": bool(os.getenv("SARVAM_API_KEY")),
-    }
+# The root "/" will be handled by the serve_frontend catch-all at the end of the file.
 
 
 @app.get("/api/health")
