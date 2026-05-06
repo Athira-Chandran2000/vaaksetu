@@ -174,13 +174,15 @@ export default function CallInterface({ onSubmitText, onSubmitAudio, isProcessin
 
       {/* Quick Suggestions */}
       <div className="ci-samples mini">
-        <div className="sample-grid scroll-x">
+        <h4 className="ci-samples-title">Test Scenarios (Click to try)</h4>
+        <div className="sample-vertical-list">
           {SAMPLE_QUERIES.map((sample, i) => (
             <button
               key={i}
-              className="btn btn-ghost btn-xs sample-btn-pill"
+              className="btn btn-ghost sample-btn-pill vertical"
               onClick={() => handleSampleQuery(sample)}
             >
+              <span className="sample-emoji">💬</span>
               {sample.label}
             </button>
           ))}
