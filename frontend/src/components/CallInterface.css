@@ -127,8 +127,8 @@
 /* ─── Chat Mode ──────────────────────────────────────────────────────────── */
 
 .call-interface.chat-mode {
-  height: 600px;
-  max-height: 80vh;
+  height: 750px;
+  max-height: 85vh;
   padding: 0;
   display: flex;
   flex-direction: column;

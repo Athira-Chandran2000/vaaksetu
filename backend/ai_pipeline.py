@@ -358,11 +358,11 @@ Context Guidelines:
 - Keep it under 3 sentences.
 
 MANDATORY Language Rules:
-- Respond ONLY in the citizen's target language script.
-- Kannada  → Use Kannada script (ಕನ್ನಡ)
-- Hindi    → Use Devanagari script (हिंदी)
-- English  → Use English
-- Do NOT use English if the target language is Kannada or Hindi.
+- Detect the language of the citizen's query and respond ONLY in that same language.
+- Kannada input → Respond in Kannada script (ಕನ್ನಡ)
+- Hindi input   → Respond in Devanagari script (हिंदी)
+- English input → Respond in English
+- Do NOT mix languages unless the citizen used a mix.
 """
 
 def generate_solution(

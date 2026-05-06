@@ -286,19 +286,8 @@ export default function AgentDashboard() {
 
       {/* Main Grid */}
       <div className="dashboard-grid">
-        {/* Left Column: Call Simulator */}
+        {/* Left Column: AI Pipeline Insights */}
         <div className="dashboard-col dashboard-col-left">
-          <CallInterface
-            onSubmitText={handleSubmitText}
-            onSubmitAudio={handleSubmitAudio}
-            isProcessing={isProcessing}
-            transcriptHistory={transcriptHistory}
-          />
-
-        </div>
-
-        {/* Center Column: Pipeline Results */}
-        <div className="dashboard-col dashboard-col-center">
           {pipelineResult ? (
             <>
               <InterpretationCard
@@ -373,11 +362,20 @@ export default function AgentDashboard() {
           ) : (
             <div className="empty-state glass-card">
               <div className="empty-icon">🌉</div>
-              <h3>VaakSetu Ready</h3>
-              <p>Submit a citizen query from the call simulator to see the AI pipeline in action.</p>
-              <p className="empty-hint">Select a quick test scenario or type your own message.</p>
+              <h3>VaakSetu AI</h3>
+              <p>Start a conversation in the center panel to see real-time interpretation.</p>
             </div>
           )}
+        </div>
+
+        {/* Center Column: Chatbot Simulator (Larger) */}
+        <div className="dashboard-col dashboard-col-center">
+          <CallInterface
+            onSubmitText={handleSubmitText}
+            onSubmitAudio={handleSubmitAudio}
+            isProcessing={isProcessing}
+            transcriptHistory={transcriptHistory}
+          />
         </div>
 
         {/* Right Column: Data Feeds & Trends */}
@@ -406,11 +404,6 @@ export default function AgentDashboard() {
                     </span>
                   </div>
                 ))}
-              </div>
-              <div className="feedback-stats">
-                <span className="feedback-stat">
-                  Total: {feedbackLog.length} signals
-                </span>
               </div>
             </div>
           )}
