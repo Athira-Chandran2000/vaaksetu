@@ -21,5 +21,4 @@ Thumbs.db
 
 # Docker
 .dockerignore
-Dockerfile
 # (Wait, usually Dockerfile is tracked, so I'll remove it from ignore)
