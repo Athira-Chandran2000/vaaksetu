@@ -1,3 +1,12 @@
+---
+title: VaakSetu
+emoji: 🌉
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
 # VaakSetu — AI-Assisted Voice Understanding for the 1092 Helpline
 
 > "Bridge of Words" — Ensuring every citizen is heard, understood, and verified in their own language before action is taken.
