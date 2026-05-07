@@ -99,10 +99,10 @@ The dashboard will be available at `http://localhost:3000`.
 
 | Feature | Technology | Description |
 |---------|------------|-------------|
-| **Multilingual ASR** | Sarvam AI (Saaras v3) | High-accuracy speech-to-text for Kannada, Hindi, and English. |
+| **Multilingual ASR** | Sarvam AI (Saaras v3) | Dynamic auto-detection for Kannada, Hindi, and English audio. |
 | **Semantic Interpretation** | Groq (Llama 3.3 70B) | Extracts core issues, categories, and entities in < 500ms. |
-| **Native Final Response** | Groq NLU | Generates solutions in the citizen's own script (ಕನ್ನಡ, हिंदी, English). |
-| **Verification Loop** | Groq + Heuristics | AI restates the issue in the target language to ensure accuracy. |
+| **Dynamic Language Sync** | Groq + Sarvam | Automatically responds in the citizen's own script (ಕನ್ನಡ, हिंदी, English) regardless of UI selection. |
+| **Verification Loop** | Groq + Heuristics | AI restates the issue in the detected language to ensure accuracy. |
 | **Sentiment Analysis** | Local Heuristics | Real-time urgency and distress detection (zero API cost). |
 | **Real-Time Data Feeds** | Mock Integrations | Simulated live data from Seva Sindhu, BBMP, BWSSB, and Bhoomi. |
 | **Agent Dashbord** | React + Vite | Premium glassmorphism UI with real-time WebSocket updates. |
