@@ -124,7 +124,7 @@ def transcribe_audio_sarvam(
     }
     data = {
         "model":     SARVAM_ASR_MODEL,
-        "language_code": lang_bcp,
+        "language_code": "unknown",  # Saaras v3 supports auto-detection
         "with_timestamps": "false",
     }
 
@@ -146,15 +146,21 @@ def transcribe_audio_sarvam(
         duration = round(time.time() - t0, 2)
         result   = resp.json()
 
-        # Sarvam returns: { "transcript": "...", ... }
+        # Sarvam returns: { "transcript": "...", "language_code": "...", "language_probability": ... }
         transcript = result.get("transcript", "").strip()
-        logger.info(f"Sarvam ASR [{lang_bcp}]: '{transcript}' ({duration}s)")
-
+        detected_bcp = result.get("language_code", lang_bcp)
+        
+        # Map BCP-47 back to Language enum
+        inv_lang_code = {v: k for k, v in LANG_CODE.items()}
+        asr_detected_lang = inv_lang_code.get(detected_bcp, language)
+        
+        logger.info(f"Sarvam ASR [Detected: {detected_bcp}]: '{transcript}' ({duration}s)")
+        
         return ASRResult(
             transcript=transcript,
-            language_detected=language,
+            language_detected=asr_detected_lang,
             dialect_detected=KannadaDialect.STANDARD,
-            confidence=0.90,          # Sarvam doesn't expose per-utterance confidence
+            confidence=result.get("language_probability", 0.90),
             duration_seconds=duration,
             segments=[],
         )
@@ -537,6 +543,8 @@ def run_pipeline(
     if audio_bytes:
         fmt = detect_audio_format(audio_bytes, audio_filename)
         asr_result = transcribe_audio_sarvam(audio_bytes, language, fmt)
+        # Prioritise language detected by ASR for the rest of the pipeline
+        language = asr_result.language_detected
     else:
         asr_result = transcribe_text_as_asr(text, language, dialect)
 
