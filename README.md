@@ -105,7 +105,40 @@ The dashboard will be available at `http://localhost:3000`.
 | **Verification Loop** | Groq + Heuristics | AI restates the issue in the detected language to ensure accuracy. |
 | **Sentiment Analysis** | Local Heuristics | Real-time urgency and distress detection (zero API cost). |
 | **Real-Time Data Feeds** | Mock Integrations | Simulated live data from Seva Sindhu, BBMP, BWSSB, and Bhoomi. |
-| **Agent Dashbord** | React + Vite | Premium glassmorphism UI with real-time WebSocket updates. |
+| **Agent Dashboard** | React + Vite | Premium glassmorphism UI with real-time WebSocket updates. |
+
+---
+
+## 🧪 Testing & Verification
+
+Once you have both servers running, follow these steps to verify the system is working:
+
+### 1. The Citizen Interaction (Left Side)
+- **Voice Test**: Click the microphone icon and speak in **Kannada**, **Hindi**, or **English**. (Requires `SARVAM_API_KEY`).
+- **Text Test**: Type a complaint (e.g., *"My water bill is too high"* or *"ನಮ್ಮ ಏರಿಯಾದಲ್ಲಿ ಕಸದ ಸಮಸ್ಯೆ ಇದೆ"*) and hit Send.
+- **Verification**: The AI will "restate" what it understood in the citizen's native language. Respond with *"Yes"* or *"ಸರಿ"* (Correct) to see the confirmation logic.
+
+### 2. The Agent Dashboard (Right Side)
+- **Live Updates**: Watch the "Agent Dashboard" panel. It updates in real-time via WebSockets as you interact on the citizen side.
+- **Interpretation Card**: You should see the AI's "Core Issue" extraction and "Suggested Solution" appearing instantly.
+- **Sentiment**: Look for the sentiment badge (Positive/Neutral/Urgent) which changes based on the citizen's tone.
+- **Escalation**: Try typing something urgent like *"The building is collapsing!"* to trigger the Red Alert escalation.
+
+### 3. Data Integration
+- Check the **"Real-Time Data Feeds"** tab on the agent side to see simulated live data from government services like BBMP and BWSSB.
+
+---
+
+## 🐳 Docker Deployment (Optional)
+
+If you have Docker installed, you can run the entire stack with one command:
+
+```bash
+docker build -t vaaksetu .
+docker run -p 8000:8000 -e GROQ_API_KEY=your_key -e SARVAM_API_KEY=your_key vaaksetu
+```
+Access the app at `http://localhost:8000`.
+
 
 ---
 
