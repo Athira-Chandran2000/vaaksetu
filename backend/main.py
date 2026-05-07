@@ -119,6 +119,7 @@ async def process_text(request: ProcessTextRequest):
         return _generate_mock_pipeline_response(session_id, request.text, request.language)
 
     # Update session
+    session.language = result.get("active_language", session.language)
     session.asr_result = result["asr_result"]
     session.interpretation = result["interpretation"]
     session.sentiment = result["sentiment"]
@@ -181,6 +182,7 @@ async def process_audio(
         logger.warning(f"Pipeline error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+    session.language = result.get("active_language", session.language)
     session.asr_result = result["asr_result"]
     session.interpretation = result["interpretation"]
     session.sentiment = result["sentiment"]
@@ -468,6 +470,7 @@ async def call_websocket(websocket: WebSocket, session_id: str):
                 except RuntimeError:
                     result = _generate_mock_result(text, language)
 
+                session.language = result.get("active_language", session.language)
                 session.asr_result = result["asr_result"]
                 session.interpretation = result["interpretation"]
                 session.sentiment = result["sentiment"]
@@ -583,6 +586,7 @@ def _generate_mock_pipeline_response(session_id: str, text: str, language: Langu
         interpretation=InterpretationCard(
             core_issue=f"Citizen reported: {text[:100]}",
             native_core_issue=text if language != Language.ENGLISH else None,
+            detected_language=language,
             category="General Inquiry",
             intent="complaint",
             entities=ExtractedEntities(),
@@ -620,6 +624,7 @@ def _generate_mock_result(text: str, language: Language) -> dict:
         "interpretation": InterpretationCard(
             core_issue=f"Citizen reported: {text[:100]}",
             native_core_issue=text if language != Language.ENGLISH else None,
+            detected_language=language,
             category="General Inquiry",
             intent="complaint",
             entities=ExtractedEntities(),

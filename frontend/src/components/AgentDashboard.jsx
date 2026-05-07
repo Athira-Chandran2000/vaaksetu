@@ -49,7 +49,11 @@ export default function AgentDashboard() {
 
       const data = await response.json();
       setPipelineResult(data);
-      setTranscriptHistory(prev => [...prev, { text, language, timestamp: new Date().toISOString() }]);
+      setTranscriptHistory(prev => [...prev, { 
+        text, 
+        language: data.interpretation?.detected_language || language, 
+        timestamp: new Date().toISOString() 
+      }]);
 
       // Auto-fetch CRM trends
       fetchCRMTrends();
@@ -87,7 +91,7 @@ export default function AgentDashboard() {
       setPipelineResult(data);
       setTranscriptHistory(prev => [...prev, {
         text: data.asr_result?.transcript || '[Audio]',
-        language,
+        language: data.interpretation?.detected_language || language,
         timestamp: new Date().toISOString(),
         source: 'audio',
       }]);

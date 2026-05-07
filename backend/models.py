@@ -105,6 +105,7 @@ class ExtractedEntities(BaseModel):
 class InterpretationCard(BaseModel):
     core_issue: str = ""
     native_core_issue: Optional[str] = None  # Issue in citizen's spoken language
+    detected_language: Optional[Language] = None
     category: str = ""
     intent: str = ""
     entities: ExtractedEntities = Field(default_factory=ExtractedEntities)

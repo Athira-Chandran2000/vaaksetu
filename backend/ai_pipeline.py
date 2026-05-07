@@ -226,6 +226,7 @@ Respond with VALID JSON ONLY — no markdown, no extra text. Schema:
 {
   "core_issue": "One-sentence summary of the citizen's main issue in English",
   "native_core_issue": "One-sentence summary of the citizen's main issue in their Spoken Language (Kannada script for Kannada, Devanagari for Hindi)",
+  "detected_language": "The primary language the citizen is speaking in (one of: kannada | hindi | english)",
   "category": "One of: Water Supply | Ration Card | Land Records | Road/Infrastructure | Pension | Garbage | Seva Sindhu | Street Light | Tree/Horticulture | BBMP Tax | Noise/Pollution | Other",
   "intent": "One of: complaint | status_inquiry | new_application | correction | emergency_report | information_request",
   "entities": {
@@ -321,16 +322,23 @@ def interpret_transcript(
                 if enrichment_context.get(key):
                     enrichment_labels.append(label)
 
+        detected_lang_str = result.get("detected_language", language.value).lower()
+        try:
+            detected_lang = Language(detected_lang_str)
+        except ValueError:
+            detected_lang = language
+
         return InterpretationCard(
             core_issue=result.get("core_issue", "Unable to determine"),
             native_core_issue=result.get("native_core_issue"),
+            detected_language=detected_lang,
             category=result.get("category", "Other"),
             intent=result.get("intent", "unknown"),
             entities=entities,
             enrichment_context=enrichment_labels,
             confidence=0.85,
             raw_interpretation=result.get("raw_interpretation", ""),
-            suggested_solution=generate_solution(result, language, enrichment_context),
+            suggested_solution=generate_solution(result, detected_lang, enrichment_context),
         )
 
     except Exception as e:
@@ -545,9 +553,14 @@ def run_pipeline(
         enrichment_context=enrichment,
     )
 
+    # Use detected language for subsequent steps
+    active_language = interpretation.detected_language or language
+    if active_language != language:
+        logger.info(f"Language switch detected: {language} -> {active_language}")
+
     # ── Step 4: Sentiment (local rule-based, zero cost) ───────────────────────
     from sentiment import classify_sentiment
-    sentiment = classify_sentiment(text=transcript, language=language.value)
+    sentiment = classify_sentiment(text=transcript, language=active_language.value)
 
     # ── Step 5: Escalation logic ──────────────────────────────────────────────
     should_escalate = False
@@ -567,12 +580,12 @@ def run_pipeline(
     verification = VerificationResult(
         status=VerificationStatus.SKIPPED if should_escalate else VerificationStatus.PENDING,
         restatement_text="",
-        restatement_language=language,
+        restatement_language=active_language,
         attempt_number=0,
     )
 
     if not should_escalate:
-        verification.restatement_text = generate_restatement(interpretation, language)
+        verification.restatement_text = generate_restatement(interpretation, active_language)
 
     return {
         "asr_result":       asr_result,
@@ -582,4 +595,5 @@ def run_pipeline(
         "enrichment_data":  enrichment,
         "should_escalate":  should_escalate,
         "escalation_reason": escalation_reason,
+        "active_language":  active_language,
     }
